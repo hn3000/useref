@@ -96,6 +96,7 @@ function getBlocks(body) {
   return sections;
 }
 
+var unknownTypes = {};
 
 // Helpers
 // -------
@@ -138,7 +139,15 @@ var helpers = {
     } else if (type === 'remove') {
         ref = '';
     } else {
-      ref = handler(blockContent, target, attbs);
+      if (!handler) {
+	  if (null == unknownTypes[type]) {
+	      unknownTypes[type] = type;
+	      console.log("no handler for block type "+type+", ignoring contents");
+	  }
+	  ref = '';
+      } else {
+	  ref = handler(blockContent, target, attbs);
+      }
     }
 
     ref = indent + ref;
