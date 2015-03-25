@@ -138,26 +138,28 @@ var helpers = {
 
     } else if (type === 'remove') {
         ref = '';
-    } else {
-      if (!handler) {
-	  if (null == unknownTypes[type]) {
-	      unknownTypes[type] = type;
-	      console.log("no handler for block type "+type+", ignoring contents");
-	  }
-	  ref = '';
-      } else {
-	  ref = handler(blockContent, target, attbs);
+    } else if (handler) {
+      ref = handler(blockContent, target, attbs);
+    }
+    else {
+      if (null == unknownTypes[type]) {
+	unknownTypes[type] = type;
+	console.log("Found no handler for block type '"+type+"', leaving contents unchanged.");
       }
+      ref = null;
     }
 
-    ref = indent + ref;
+    if(ref != null) {
+      ref = indent + ref;
 
-    // Reserve IE conditional comment if exist
-    if (ccmatches) {
-      ref = indent + ccmatches[1] + linefeed + ref + linefeed + indent + ccmatches[2];
+      // Reserve IE conditional comment if exist
+      if (ccmatches) {
+        ref = indent + ccmatches[1] + linefeed + ref + linefeed + indent + ccmatches[2];
+      }
+
+      return content.replace(block, ref);
     }
-
-    return content.replace(block, ref);
+    else { return content; }
   }
 };
 
