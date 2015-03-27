@@ -4,6 +4,11 @@ Parse build blocks in HTML files to replace references
 
 Extracted from the grunt plugin [grunt-useref](https://github.com/pajtai/grunt-useref).
 
+## About this fork
+
+I addition to the original, this fork offers logging in case unknown block types are encountered (so that we can see typos)
+and allows a catch-all handler for unknown block types to be used (which disables any logging unless you log messages yourself).
+
 ## Installation
 
 ```
@@ -153,3 +158,36 @@ The handler function gets the following arguments:
 - *options* (String): The extra attributes from the use block definition, the developer can parse as JSON or do whatever they want with it
 
 Include a handler for each custom block type.
+
+A warning will be issued for unknown block types. You can provide a catch-all handler for custom block types
+if you have several similar blocks when the handler can profit from the similarity.
+
+The unknown block handler should look like this:
+
+```
+useref = require('node-useref')
+var result = useref(inputHtml, {
+  // called for all blocks that do not have a specific handler:
+  unknownBlock: function (type, content, target, attrs) {
+    // do something with `content` and return the desired HTML to replace the block content
+    switch (type) {
+      case 'import':
+      	   // TODO: think of a good example
+    }
+
+    // you can use this for custom logging:
+    console.log("UNKNOWN BLOCK TYPE: "+type);
+
+    // return null to have the block removed
+    return null;
+  }
+});
+```
+
+The unknownBlock handler function gets the following arguments:
+
+- *type* (String): The type of the custom block
+- *content* (String): The content of the custom use block
+- *target* (String): The "path" value of the use block definition
+- *attrs* (String): The extra attributes from the use block definition, the developer can parse as JSON or do whatev\
+er they want with it

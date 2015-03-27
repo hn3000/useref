@@ -102,7 +102,7 @@ var unknownTypes = {};
 // -------
 var helpers = {
   // useref and useref:* are used with the blocks parsed from directives
-  useref: function (content, block, target, type, attbs, handler) {
+  useref: function (content, block, target, type, attbs, handler, unkHandler) {
     var linefeed = /\r\n/g.test(content) ? '\r\n' : '\n',
         lines = block.split(linefeed),
         ref = '',
@@ -140,11 +140,15 @@ var helpers = {
         ref = '';
     } else if (handler) {
       ref = handler(blockContent, target, attbs);
+    } else if (unkHandler) {
+      ref = unkHandler(type, blockContent, target, attbs);
     }
     else {
       if (null == unknownTypes[type]) {
 	unknownTypes[type] = type;
 	console.log("Found no handler for block type '"+type+"', leaving contents unchanged.");
+	console.log("This message will only be printed once per type. Provide a handler by");
+	console.log("adding it to the options: { '"+type+"': function(content, target, attrs) {} }.");
       }
       ref = null;
     }
@@ -175,9 +179,10 @@ function updateReferences(blocks, content, options) {
       type = parts[0],
       target = parts[1],
       attbs =  parts[2],
-      handler = options && options[type];
+      handler = options && options[type],
+      unkHandler = options && options['unknownBlock'];
 
-    content = helpers.useref(content, block, target, type, attbs, handler);
+    content = helpers.useref(content, block, target, type, attbs, handler, unkHandler);
   });
 
   return content;
