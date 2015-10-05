@@ -6,7 +6,7 @@ Extracted from the grunt plugin [grunt-useref](https://github.com/pajtai/grunt-u
 
 ## About this fork
 
-I addition to the original, this fork offers logging in case unknown block types are encountered (so that we can see typos)
+In addition to the original, this fork offers logging in case unknown block types are encountered (so that we can see typos)
 and allows a catch-all handler for unknown block types to be used (which disables any logging unless you log messages yourself).
 
 ## Installation
